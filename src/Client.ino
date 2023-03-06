@@ -1,10 +1,4 @@
-/////////////////////////////////////////////////////////////////
-/*
-  ESP32 | Walkie-Talkie, Half-duplex communication based on WebSocket
-  Video Tutorial: https://youtu.be/kw30vLdrGE8
-  Created by Eric Nam (ThatProject)
-*/
-/////////////////////////////////////////////////////////////////
+
 
 #include <WiFi.h>
 #include <ArduinoWebsockets.h>
