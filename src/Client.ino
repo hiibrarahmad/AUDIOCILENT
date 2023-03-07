@@ -2,10 +2,10 @@
 
 #include <WiFi.h>
 #include <ArduinoWebsockets.h>
-#include <TFT_eSPI.h>
-#include "Free_Fonts.h"
+//#include <TFT_eSPI.h>
+//#include "Free_Fonts.h"
 #include "driver/i2s.h"
-#include "Button2.h";
+#include "Button2.h"
 #include "I2s_Setting.h"
 #include "Const.h"
 #define RIGHT_BUTTON_PIN  35
@@ -14,8 +14,8 @@ Button2 rButton = Button2(RIGHT_BUTTON_PIN);
 using namespace websockets;
 WebsocketsClient client;
 
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite logScreen = TFT_eSprite(&tft);
+//TFT_eSPI tft = TFT_eSPI();
+//TFT_eSprite logScreen = TFT_eSprite(&tft);
 
 unsigned long timeStampOffset = 0;
 unsigned long requestTimestamp;
@@ -23,8 +23,8 @@ TaskHandle_t i2sReadTaskHandler = NULL;
 
 void setup() {
   Serial.begin(115200);
-  display_init();
-  display_ready_screen();
+  //display_init();
+  //display_ready_screen();
   button_init();
   i2s_buff_init();
   start_to_connect();
@@ -67,32 +67,39 @@ void actionCommand(unsigned long timestamp){
 
   if(requestTimestamp == timestamp && states == Idle){
     states = Speaking;
-    print_log_screen("* Speaking Mode *");
+    //print_log_screen("* Speaking Mode *");
+    Serial.printf("speaking mode");
     i2s_RX_init();
     xTaskCreate(i2s_read_task, "i2s_read_task", 4096, NULL, 1, &i2sReadTaskHandler);
   }else if(requestTimestamp != timestamp ){
     if(states == Idle){
       states = Listening;
       i2s_TX_init();
-      print_log_screen("* Listening Mode *");
+     //print_log_screen("* Listening Mode *");
+     Serial.printf("listening mode");
     }else if(states == Listening){
       states = Idle;
       i2s_TX_uninst();
-      print_log_screen("* IDLE Mode *");
+      //print_log_screen("* IDLE Mode *");
+      Serial.printf("idle mode");
+
     }
   }
 }
 
 void start_to_connect(){
   WiFi.begin(ssid, password);
-  print_log_screen("- WiFi Connecting");
+  //print_log_screen("- WiFi Connecting");
+  Serial.printf("wifi connecting");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
 
-  print_log_screen("+ WiFi Connected");
-  print_log_screen("- Socket Connecting");
+  //print_log_screen("+ WiFi Connected");
+  Serial.printf("wifi connected");
+ // print_log_screen("- Socket Connecting");
+ Serial.printf("socket connecting");
   
   client.onMessage(onMessageCallback);
   client.onEvent(onEventsCallback);
@@ -101,7 +108,8 @@ void start_to_connect(){
     Serial.print(".");
   }
 
-  print_log_screen("+ Socket Connected");
+ // print_log_screen("+ Socket Connected");
+ Serial.printf("socket connected");
 }
 
 static void i2s_read_task(void *arg){
@@ -130,7 +138,8 @@ void pressed(Button2& btn) {
 void released(Button2& btn) {
   if(btn == rButton && states == Speaking){
     states = Idle;
-    print_log_screen("* IDLE Mode *");
+    //print_log_screen("* IDLE Mode *");
+    Serial.printf("idle mode");
 
     delay(100);
     if( i2sReadTaskHandler != NULL ){
@@ -153,7 +162,7 @@ void button_init(){
    rButton.setPressedHandler(pressed);
    rButton.setReleasedHandler(released);
 }
-
+/*
 void display_init(){
   tft.begin();
   tft.setRotation(0);
@@ -193,3 +202,4 @@ void print_log_screen(String text){
   logScreen.pushSprite(0, tft.height()/2);
   logScreen.scroll(0,16);
 }
+*/
